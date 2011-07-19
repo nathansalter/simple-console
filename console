@@ -1,0 +1,7 @@
+#!/usr/bin/env php
+<?php
+
+require_once(__DIR__ . '/Console.php'); 
+
+$console = new Console\Console(); 
+$console->runAndListen(); 
