@@ -6,11 +6,13 @@ class Console
 {
   protected
     $defaultRunner, 
-    $commands = array(); 
+    $commands = array(), 
+    $inputHandler; 
 
-  public function __construct(Runner\AbstractRunner $runner = null)
+  public function __construct(Runner\AbstractRunner $runner = null, $inputHandler = null)
   {
     $this->runner = null === $runner ? new Runner\NullRunner() : $runner; 
+    $this->inputHandler = $inputHandler; 
 
     $this->registerCommand(new Command\Ls(), new Runner\Shell());
     $this->registerCommand(new Command\Quit(), new Runner\PHP());  
@@ -27,30 +29,44 @@ class Console
   }
 
   /**
-   * Cannot be tested because stdin cannot be filled from test
-   *
    * @codeCoverageIgnore
    */
-  public function runAndListen()
+  public function run()
   {
     echo "Welcome to my Console\nQuit with quit()\n\n"; 
-    $f = fopen("php://stdin", "r");
+    $this->runAndListen(); 
+  }
+
+  protected function runAndListen()
+  {
+    $fp = $this->inputHandler !== null ? $this->inputHandler : fopen("php://stdin", "r"); 
 
     while(true)
     {
       echo ">> "; 
       
-      $command = trim(fgets($f)); 
+      $command = trim(fgets($fp)); 
 
       if (empty($command)) continue; 
 
       $parts = explode(' ', $command);
       
-      echo $this->run($parts); 
+      $result = $this->parseAndRun($parts); 
+
+      if (false === $result)
+      {
+        break; 
+      }
+      else
+      {
+        echo $result; 
+      }
     }
+
+    fclose($fp); 
   }
 
-  protected function run($parts)
+  protected function parseAndRun($parts)
   {
     if (isset($this->commands[$parts[0]]))
     {

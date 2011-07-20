@@ -8,4 +8,4 @@ if (file_exists($file = __DIR__ . '/../autoload.php')) {
 }
 
 $console = new Console\Console(); 
-$console->runAndListen(); 
+$console->run(); 
