@@ -3,6 +3,15 @@ Usage
 
 Start the console: 
 
-    ./console
+    $ ./console
 
+You can execute commands which are registered in the Console class: 
 
+    >> list testdir
+    1.txt
+    2.txt
+    3.txt
+
+And quit the console: 
+
+    >> quit()
